@@ -1,0 +1,23 @@
+{
+  "name": "ringpop-admin",
+  "description": "An admin tool for ringpop",
+  "contributors": [
+    "Jeff Wolski <wolski@uber.com>"
+  ],
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "jshint": "jshint --verbose *.js"
+  },
+  "dependencies": {
+    "commander": "^2.6.0",
+    "tchannel": "git+ssh://gitolite@code.uber.internal:github/uber/tchannel#v1.1.1"
+  },
+  "devDependencies": {
+    "jshint": "^2.5.6",
+    "pre-commit": "^0.0.9"
+  },
+  "pre-commit": [
+    "jshint"
+  ]
+}
