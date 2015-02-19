@@ -10,6 +10,7 @@
     "jshint": "jshint --verbose *.js"
   },
   "dependencies": {
+    "async": "^0.9.0",
     "commander": "^2.6.0",
     "tchannel": "git+ssh://gitolite@code.uber.internal:github/uber/tchannel#v1.1.1"
   },
