@@ -96,6 +96,7 @@ function main() {
                     next(null, {
                         checksum: 'error'
                     });
+                    return;
                 }
 
                 next(null, {
