@@ -12,12 +12,14 @@ function safeParse(thing) {
 }
 
 function main() {
-    program.parse(process.argv);
+    program
+        .option('-m, --member <address>', 'Address of member')
+        .parse(process.argv);
 
-    var host = program.args[0];
+    var address = program.member;
 
-    if (!host) {
-        console.error('host is required');
+    if (!address) {
+        console.error('address is required');
         process.exit(1);
     }
 
@@ -26,7 +28,7 @@ function main() {
         port: 31999
     });
 
-    console.log('sending /admin/stats request to ' + host);
+    console.log('sending /admin/stats request to ' + address);
 
     function printAndExit(msg) {
         console.log(msg);
@@ -34,9 +36,9 @@ function main() {
     }
 
     var originChecksum;
-    var originNode = host;
+    var originNode = address;
 
-    client.send({ host: host }, '/admin/stats', null, null, function(err, res1, res2) {
+    client.send({ host: address }, '/admin/stats', null, null, function(err, res1, res2) {
         if (err) {
             console.log('an error occurred: ' + err.message + '. exiting...');
             process.exit(1);
@@ -58,7 +60,7 @@ function main() {
 
         originChecksum = stats.membership.checksum;
 
-        console.log('gathered initial ' + stats.membership.members.length + ' members with checksum ' + stats.membership.checksum + ' from ' + host);
+        console.log('gathered initial ' + stats.membership.members.length + ' members with checksum ' + stats.membership.checksum + ' from ' + address);
 
         function gatherStats(member, callback) {
             client.send({ host: member.address }, '/admin/stats', null, null, function(err, res1, res2) {
