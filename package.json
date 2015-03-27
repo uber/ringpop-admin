@@ -6,6 +6,9 @@
   ],
   "version": "0.0.4",
   "private": true,
+  "bin": {
+    "ringpop-admin": "./admin.js"
+  },
   "scripts": {
     "jshint": "jshint --verbose *.js"
   },
