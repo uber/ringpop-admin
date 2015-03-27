@@ -22,24 +22,25 @@ An admin tool for ringpop
 ```
 
 ## cluster-state
+Queries instance at `hostPort` for all membership information. Uses that information to then query all other members. Reports if all members have converged on a single checksum and formed 1 cluster.
 
 ```
-  Usage: admin-cluster-state [options]
+  Usage: admin-cluster-state [options] <hostPort>
 
   Options:
 
-    -h, --help              output usage information
-    -m, --member <address>  Address of member
+    -h, --help  output usage information
 ```
 
 ## member-state
+Queries instance at `hostPort` for membership state.
 
 ```
-  Usage: admin-member-state [options]
+  Usage: admin-member-state [options] <hostPort>
 
   Options:
 
     -h, --help              output usage information
-    -m, --member <address>  Address of member. If left blank, queries state of all members.
+    -m, --member <hostPort> Address of member. If not provided, reports state of all members.
     -s, --sort <field>      Sort ascending by field. One of address, status, incarnationNumber.
 ```

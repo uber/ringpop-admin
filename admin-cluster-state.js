@@ -13,13 +13,13 @@ function safeParse(thing) {
 
 function main() {
     program
-        .option('-m, --member <address>', 'Address of member')
+        .usage('[options] <hostPort>')
         .parse(process.argv);
 
-    var address = program.member;
+    var address = program.args[0];
 
     if (!address) {
-        console.error('address is required');
+        console.error('hostPort is required');
         process.exit(1);
     }
 

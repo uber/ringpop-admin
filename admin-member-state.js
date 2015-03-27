@@ -83,15 +83,16 @@ function sendAdminMemberGet(instanceAddr, memberAddr, callback) {
 
 function main() {
     program
-        .option('-m, --member <address>', 'Address of member. If left blank, queries state of all members.')
+        .usage('[options] <hostPort>')
+        .option('-m, --member <hostPort>', 'Address of member. If not provided, reports state of all members.')
         .option('-s, --sort <field>', 'Sort ascending by field. One of address, status, incarnationNumber.')
         .parse(process.argv);
 
-    var node = program.args[0];
+    var hostPort = program.args[0];
     var addr = program.member;
 
-    if (!node) {
-        console.error('host is required');
+    if (!hostPort) {
+        console.error('hostPort is required');
         process.exit(1);
     }
 
@@ -101,7 +102,7 @@ function main() {
         'incarnation no.'
     ]);
 
-    sendAdminMemberGet(node, addr, function onSend(states) {
+    sendAdminMemberGet(hostPort, addr, function onSend(states) {
         var sortedStates = states.sort(function sortBy(a, b) {
             if (program.sort === 'status') {
                 return a.status.localeCompare(b.status);
