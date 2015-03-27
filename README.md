@@ -9,11 +9,13 @@ An admin tool for ringpop
 
   Commands:
 
-    cluster-state   Query state of cluster. See cluster-state --help for details.
+    cluster-state   Query state of cluster. See cluster-state --help for more details.
     join <node>     causes node to join the cluster
     leave <node>    causes node to leave the cluster
-    member-state    Query state of member. See member-state --help for details.
+    member-state    Query state of member. See member-state --help for more details.
     help [cmd]      display help for [cmd]
+
+  Command-line tools for ringpop
 
   Options:
 
@@ -33,14 +35,15 @@ Queries instance at `hostPort` for all membership information. Uses that informa
 ```
 
 ## member-state
-Queries instance at `hostPort` for membership state.
-
 ```
   Usage: admin-member-state [options] <hostPort>
 
+  Queries instance at `hostPort` for membership state. Available in ringpop 9.9.0+.
+
   Options:
 
-    -h, --help              output usage information
-    -m, --member <hostPort> Address of member. If not provided, reports state of all members.
-    -s, --sort <field>      Sort ascending by field. One of address, status, incarnationNumber.
+    -h, --help               output usage information
+    -c, --changes <changes>  JSON array of updates to apply before fetching state.
+    -m, --member <hostPort>  Address of member. If not provided, reports state of all members.
+    -s, --sort <field>       Sort ascending by field. One of address, status, incarnationNumber. Defaults to address.
 ```

@@ -61,15 +61,20 @@ function newTable(head) {
     });
 }
 
-function sendAdminMemberGet(instanceAddr, memberAddr, callback) {
+function sendAdminMemberGet(instanceAddress, memberAddress, changes, callback) {
     var client = new TChannel({
         host: '127.0.0.1',
         port: 31999
     });
 
+    var body = JSON.stringify({
+        member: memberAddress,
+        changes: changes
+    });
+
     client.send({
-        host: instanceAddr
-    }, '/admin/member/get', null, memberAddr, function onSend(err, res1, res2) {
+        host: instanceAddress
+    }, '/admin/member', null, body, function onSend(err, res1, res2) {
         if (err) {
             console.error('Error: ' + err.message);
             process.exit(1);
@@ -83,17 +88,29 @@ function sendAdminMemberGet(instanceAddr, memberAddr, callback) {
 
 function main() {
     program
+        .description('Queries instance at `hostPort` for membership state. Available in ringpop 9.9.0+.')
         .usage('[options] <hostPort>')
+        .option('-c, --changes <changes>', 'JSON array of updates to apply before fetching state.')
         .option('-m, --member <hostPort>', 'Address of member. If not provided, reports state of all members.')
         .option('-s, --sort <field>', 'Sort ascending by field. One of address, status, incarnationNumber.')
         .parse(process.argv);
 
     var hostPort = program.args[0];
     var addr = program.member;
+    var changes = program.changes;
 
     if (!hostPort) {
         console.error('hostPort is required');
         process.exit(1);
+    }
+
+    if (changes) {
+        changes = safeParse(changes);
+
+        if (!changes) {
+            console.error('changes must be valid JSON');
+            process.exit(1);
+        }
     }
 
     var table = newTable([
@@ -102,7 +119,7 @@ function main() {
         'incarnation no.'
     ]);
 
-    sendAdminMemberGet(hostPort, addr, function onSend(states) {
+    sendAdminMemberGet(hostPort, addr, changes, function onSend(states) {
         var sortedStates = states.sort(function sortBy(a, b) {
             if (program.sort === 'status') {
                 return a.status.localeCompare(b.status);
