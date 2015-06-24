@@ -9,6 +9,7 @@ An admin tool for ringpop
 
   Commands:
 
+    cluster-dist    Shows distribution of keyspace per node. See cluster-dist --help for more details.
     cluster-state   Query state of cluster. See cluster-state --help for more details.
     join <node>     causes node to join the cluster
     leave <node>    causes node to leave the cluster
