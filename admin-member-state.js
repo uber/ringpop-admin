@@ -22,7 +22,7 @@
 'use strict';
 
 var CliColor = require('cli-color');
-var CliTable = require('cli-table');
+var newTable = require('./new-table.js');
 var program = require('commander');
 var TChannel = require('tchannel');
 
@@ -36,29 +36,6 @@ function colorStatus(status) {
     } else {
         return CliColor.red(status);
     }
-}
-
-function newTable(head) {
-    return new CliTable({
-        chars: {
-            'bottom': '' ,
-            'bottom-mid': '' ,
-            'bottom-left': '' ,
-            'bottom-right': '' ,
-            'left': '' ,
-            'left-mid': '' ,
-            'mid': '' ,
-            'mid-mid': '' ,
-            'middle': ' ',
-            'right': '' ,
-            'right-mid': '' ,
-            'top': '' ,
-            'top-mid': '' ,
-            'top-left': '' ,
-            'top-right': '' ,
-        },
-        head: head
-    });
 }
 
 function sendAdminMemberGet(instanceAddress, memberAddress, changes, callback) {
