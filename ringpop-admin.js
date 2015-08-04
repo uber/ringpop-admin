@@ -6,10 +6,10 @@ function main() {
         .description('Command-line tools for ringpop')
         .version(require('./package.json').version)
         .command('cluster-dist', 'Shows distribution of keyspace per node. See cluster-dist --help for more details.')
-        .command('cluster-state', 'Query state of cluster. See cluster-state --help for more details.')
         .command('join <node>', 'causes node to join the cluster')
         .command('leave <node>', 'causes node to leave the cluster')
         .command('member-state', 'Query state of member. See member-state --help for more details.')
+        .command('top', 'Display cluster membership information. See top --help for more details.')
         .parse(process.argv);
 }
 
