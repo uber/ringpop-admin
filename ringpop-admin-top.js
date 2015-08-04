@@ -31,7 +31,7 @@ function main() {
         .option('-p, --page-size <page-size>', 'Page size. Default is 15.')
         .option('-r, --refresh-rate <refresh-rate>', 'Refresh rate (in milliseconds). Default is 10000.')
         .option('-R, --no-refresh', 'Turn refresh off. top will exit immediately after first download.')
-        .option('--use-v1', 'Use TChannel v1. Default is v2.')
+        .option('--tchannel-v1', 'Use TChannel v1. Default is v2.')
         .usage('[options] <host-port>');
 
     program.on('--help', function onHelp() {
@@ -57,7 +57,7 @@ function main() {
 
     pageSize = +program.pageSize || Defaults.PageSize;
     refreshRate = +program.refreshRate || Defaults.RefreshRate;
-    tchannelVersion = (program.useV1 && 'v1') || Defaults.TChannelVersion;
+    tchannelVersion = (program.tchannelV1 && 'v1') || Defaults.TChannelVersion;
 
     var coordinatorNode = new ClusterNode(coordinatorAddress);
     var clusterManager = new ClusterManager(tchannelVersion);

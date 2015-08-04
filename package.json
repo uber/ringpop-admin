@@ -11,7 +11,7 @@
   },
   "scripts": {
     "jshint": "jshint --verbose *.js",
-    "tchannelv1": "mv node_modules/tchannel node_modules/tchannelv2 && npm install tchannel@1.3.2 && mv node_modules/tchannel node_modules/tchannelv1 && mv node_modules/tchannelv2 node_modules/tchannel"
+    "tchannel-v1": "mv node_modules/tchannel node_modules/tchannelv2 && npm install tchannel@1.3.2 && mv node_modules/tchannel node_modules/tchannelv1 && mv node_modules/tchannelv2 node_modules/tchannel"
   },
   "dependencies": {
     "async": "^0.9.0",
