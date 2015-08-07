@@ -28,6 +28,7 @@ var Defaults = {
 function main() {
     program
         .description('A program that displays cluster membership information.')
+        .option('-d, --dump-file <file>', 'dump file target for appending JSON stats', 'ringpop-admin-stats.dump')
         .option('-p, --page-size <page-size>', 'Page size. Default is 15.')
         .option('-r, --refresh-rate <refresh-rate>', 'Refresh rate (in milliseconds). Default is 10000.')
         .option('-R, --no-refresh', 'Turn refresh off. top will exit immediately after first download.')
@@ -43,6 +44,7 @@ function main() {
         console.log('    Ctrl+f   Page down');
         console.log('    Ctrl+b   Page up');
         console.log('    [Space]  Pause/resume refresh');
+        console.log('    d        Dump current stats');
         console.log('    q        Quit application');
     });
 
@@ -60,7 +62,8 @@ function main() {
     tchannelVersion = (program.tchannelV1 && 'v1') || Defaults.TChannelVersion;
 
     var coordinatorNode = new ClusterNode(coordinatorAddress);
-    var clusterManager = new ClusterManager(tchannelVersion);
+    var clusterManager =
+            new ClusterManager(tchannelVersion, { dumpTo: program.dumpFile });
     var partitionBar = new PartitionBar();
 
     if (program.refresh === false) {
@@ -393,6 +396,9 @@ function waitForInput(clusterManager, partitionBar) {
                 break;
             case ' ':
                 toggleRefresh();
+                break;
+            case 'd':
+                clusterManager.dumpStats();
                 break;
             default:
                 var partitionNumber = +data;
