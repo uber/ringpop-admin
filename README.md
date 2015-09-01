@@ -10,7 +10,8 @@ Admin tools for Ringpop
   Commands:
 
     dist        Distribution of keyspace
-    count       Counts of members
+    count       Counts members
+    list        List member information
     top         General membership information
     help [cmd]  display help for [cmd]
 
