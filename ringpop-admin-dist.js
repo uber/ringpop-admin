@@ -30,7 +30,7 @@ var safeParse = require('./lib/util.js').safeParse;
 
 function main() {
     program
-        .description('Shows distribution of keyspace per nodes')
+        .description('Distribution of keyspace')
         .usage('[options] <hostPort>')
         .parse(process.argv);
 

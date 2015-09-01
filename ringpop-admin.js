@@ -25,10 +25,12 @@ var program = require('commander');
 
 function main() {
     program
-        .description('Command-line tools for ringpop')
+        .description('Command-line tools for Ringpop')
         .version(require('./package.json').version)
-        .command('cluster-dist', 'Shows distribution of keyspace per node. See cluster-dist --help for more details.')
-        .command('top', 'Display cluster membership information. See top --help for more details.')
+        .command('dist', 'Distribution of keyspace')
+        .command('count', 'Counts members')
+        .command('list', 'List member information')
+        .command('top', 'General membership information')
         .parse(process.argv);
 }
 
