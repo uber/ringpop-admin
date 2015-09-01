@@ -4,16 +4,17 @@ Admin tools for Ringpop
 # Usage
 
 ```
-  Usage: admin [options] [command]
+  Usage: ringpop-admin [options] [command]
 
 
   Commands:
 
-    cluster-dist   Shows distribution of keyspace per node. See cluster-dist --help for more details.
-    top            Display cluster membership information. See top --help for more details.
-    help [cmd]     display help for [cmd]
+    dist        Distribution of keyspace
+    count       Counts of members
+    top         General membership information
+    help [cmd]  display help for [cmd]
 
-  Command-line tools for ringpop
+  Command-line tools for Ringpop
 
   Options:
 
