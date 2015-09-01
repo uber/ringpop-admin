@@ -30,6 +30,7 @@ function main() {
         .description('Count members')
         .option('-h --hosts', 'Count of hosts')
         .option('-m --members', 'Count of members')
+        .option('-p --partitions', 'Count of partitions')
         .option('--tchannel-v1')
         .usage('[options] <hostport>');
     program.parse(process.argv);
@@ -38,6 +39,11 @@ function main() {
 
     if (!coord) {
         console.error('Error: hostport is required');
+        process.exit(1);
+    }
+
+    if (!program.hosts && !program.members && !program.partitions) {
+        console.error('Error: one of hosts, members or partitions is required');
         process.exit(1);
     }
 
@@ -50,8 +56,14 @@ function main() {
             process.exit(1);
         }
 
-        if (clusterManager.getPartitionCount() > 1) {
-            console.error('Error: cluster is partitioned');
+        var partitionCount = clusterManager.getPartitionCount();
+        if (program.partitions) {
+            console.log(partitionCount);
+            process.exit(0);
+        }
+
+        if (partitionCount > 1) {
+            console.error('Error: cluster is partitioned. An accurate count cannot be provided.');
             process.exit(1);
         }
 
