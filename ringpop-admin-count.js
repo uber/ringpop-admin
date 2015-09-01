@@ -67,12 +67,6 @@ function main() {
             process.exit();
         }
     });
-
-    function printSorted(things) {
-        things.sort().forEach(function each(thing) {
-            console.log(thing);
-        });
-    }
 }
 
 if (require.main === module) {
