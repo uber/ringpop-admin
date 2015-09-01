@@ -27,9 +27,9 @@ var program = require('commander');
 
 function main() {
     program
-        .description('Count members')
-        .option('-h --hosts', 'Count of hosts')
-        .option('-m --members', 'Count of members')
+        .description('List members or hsots')
+        .option('-h --hosts', 'List hosts')
+        .option('-m --members', 'List members')
         .option('--tchannel-v1')
         .usage('[options] <hostport>');
     program.parse(process.argv);
@@ -58,12 +58,12 @@ function main() {
         var cluster = clusterManager.getClusterAt(0);
 
         if (program.members) {
-            console.log(cluster.getNodeCount());
+            printSorted(cluster.getMemberAddrs());
             process.exit();
         }
 
         if (program.hosts) {
-            console.log(cluster.getHostCount());
+            printSorted(cluster.getHostAddrs());
             process.exit();
         }
     });
@@ -78,3 +78,4 @@ function main() {
 if (require.main === module) {
     main();
 }
+

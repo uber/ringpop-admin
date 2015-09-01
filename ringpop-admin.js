@@ -28,7 +28,8 @@ function main() {
         .description('Command-line tools for Ringpop')
         .version(require('./package.json').version)
         .command('dist', 'Distribution of keyspace')
-        .command('count', 'Counts of members')
+        .command('count', 'Counts members')
+        .command('list', 'List member information')
         .command('top', 'General membership information')
         .parse(process.argv);
 }
