@@ -24,7 +24,7 @@ Help:
       status       Status of members in ring
       partitions   Show partition information of a ring
       top          General membership information
-      reap         Remove the faulty nodes from this nodes membership
+      reap         Remove the faulty nodes from this node's membership
       help [cmd]   display help for [cmd]
   
     Command-line tools for Ringpop
