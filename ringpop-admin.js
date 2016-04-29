@@ -39,6 +39,7 @@ function main() {
         .command('partitions', 'Show partition information of a ring')
         .command('top', 'General membership information')
         .command('reap', 'Remove the faulty nodes from this nodes membership')
+        .command('heal', 'Start a partition heal coordinated by the target node')
         .on('--help', function onHelp() {
             console.log('  Discovery:');
             console.log('');
