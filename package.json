@@ -19,7 +19,8 @@
     "ringpop-admin-partitions": "./partitions.js",
     "ringpop-admin-reap": "./reap.js",
     "ringpop-admin-status": "./status.js",
-    "ringpop-admin-top": "./top.js"
+    "ringpop-admin-top": "./top.js",
+    "ringpop-admin-heal": "./heal.js"
   },
   "scripts": {
     "jshint": "jshint --verbose *.js lib/*.js lib/discover/*.js",
