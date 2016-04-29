@@ -12,6 +12,7 @@
     "ringpop-admin-count": "./count.js",
     "ringpop-admin-dist": "./dist.js",
     "ringpop-admin-dump": "./dump.js",
+    "ringpop-admin-heal": "./heal.js",
     "ringpop-admin-join": "./join.js",
     "ringpop-admin-leave": "./leave.js",
     "ringpop-admin-list": "./list.js",
@@ -19,8 +20,7 @@
     "ringpop-admin-partitions": "./partitions.js",
     "ringpop-admin-reap": "./reap.js",
     "ringpop-admin-status": "./status.js",
-    "ringpop-admin-top": "./top.js",
-    "ringpop-admin-heal": "./heal.js"
+    "ringpop-admin-top": "./top.js"
   },
   "scripts": {
     "jshint": "jshint --verbose *.js lib/*.js lib/discover/*.js",
