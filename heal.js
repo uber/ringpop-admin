@@ -75,14 +75,13 @@ function main() {
             }
 
             if (!resp) {
-                console.error('did not receive a response during heal.')
+                console.error('did not receive a response during heal.');
                 process.exit(3);
             }
 
-
             var targets = resp.targets || [];
-            if (targets.length == 0) {
-                log('No (reachable) partitions left')
+            if (targets.length === 0) {
+                log('No (reachable) partitions left');
                 // graceful exit
                 return process.exit(0);
             }
