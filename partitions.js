@@ -32,10 +32,33 @@ function main() {
         discoveryUri: command.discoveryUri
     });
 
+    if (command.wait) {
+        printStats(command, clusterManager);
+        setInterval(function onTimeout() {
+            printStats(command, clusterManager, false);
+        }, command.wait * 1000);
+    } else {
+        printStats(command, clusterManager, true);
+    }
+}
+
+function getTime() {
+    var date = new Date();
+    var hour = date.getHours(); hour = (hour < 10 ? "0" : "") + hour;
+    var min  = date.getMinutes(); min = (min < 10 ? "0" : "") + min;
+    var sec  = date.getSeconds(); sec = (sec < 10 ? "0" : "") + sec;
+    var msec = date.getMilliseconds();
+    msec = (msec < 10? "00" : msec < 100? "0" : "") + msec;
+    return hour + ":" + min + ":" + sec + "." + msec;
+}
+
+function printStats(command, clusterManager, exit) {
     clusterManager.fetchStats(function onStats(err) {
         if (err) {
             console.error('Error: ' + err.message);
-            process.exit(1);
+            if (exit) {
+                process.exit(1);
+            }
         }
 
         var partitions = clusterManager.getPartitions();
@@ -43,6 +66,7 @@ function main() {
         var headers = [];
         if (!command.quiet) {
             headers = [
+                getTime(),
                 'Checksum',
                 '# Nodes',
                 '# Alive',
@@ -55,6 +79,7 @@ function main() {
         var table = createTable(headers);
         partitions.forEach(function each(partition) {
             table.push([
+                "",
                 partition.membershipChecksum,
                 partition.nodeCount,
                 partition.aliveCount,
@@ -66,7 +91,9 @@ function main() {
         console.log(table.toString());
 
         clusterManager.printConnectionErrorMsg();
-        process.exit();
+        if (exit) {
+            process.exit();
+        }
     });
 }
 

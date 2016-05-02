@@ -24,7 +24,7 @@ Help:
       status       Status of members in ring
       partitions   Show partition information of a ring
       top          General membership information
-      reap         Remove the faulty nodes from this nodes membership
+      reap         Remove nodes marked as faulty from the cluster
       heal         Start a partition heal coordinated by the target node
       help [cmd]   display help for [cmd]
   

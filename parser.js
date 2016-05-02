@@ -65,6 +65,7 @@ function parsePartitionCommand() {
     program
         .description('Show partition information of a ring')
         .option('--tchannel-v1')
+        .option('-w, --wait <seconds>', 'Wait between updates')
         .option('-q, --quiet', 'Don\'t print headers')
         .usage('[options] <discoveryUri>');
     program.parse(process.argv);
@@ -73,6 +74,7 @@ function parsePartitionCommand() {
     return new commands.PartitionCommand(
         program.tchannelV1,
         program.args[0],
+        program.wait,
         program.quiet
     );
 }

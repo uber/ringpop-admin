@@ -38,7 +38,7 @@ function main() {
         .command('status', 'Status of members in ring')
         .command('partitions', 'Show partition information of a ring')
         .command('top', 'General membership information')
-        .command('reap', 'Remove the faulty nodes from this nodes membership')
+        .command('reap', 'Remove nodes marked as faulty from the cluster')
         .command('heal', 'Start a partition heal coordinated by the target node')
         .on('--help', function onHelp() {
             console.log('  Discovery:');

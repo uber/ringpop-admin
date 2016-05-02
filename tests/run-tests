@@ -77,6 +77,13 @@ if ! type cram &>/dev/null; then
     exit 1
 fi
 
+# check timeout or gtimeout is present
+if [ -z "$(which timeout || which gtimeout)" ]; then
+    echo "timeout/gtimeout not installed (try: 'brew install coreutils')." >&2
+    echo
+    exit 1
+fi
+
 # Check test files exist
 if ! ls $test_files >/dev/null; then
     echo "ERROR: Test files missing." >&2
