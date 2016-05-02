@@ -25,11 +25,21 @@ var ClusterManager = require('./lib/cluster.js');
 var assertNoError = require('./lib/util.js').assertNoError;
 var program = require('commander');
 
+function safeParseInt(number, defaultValue) {
+    number = parseInt(number, 10);
+    if (isNaN(number)) {
+        return defaultValue;
+    } else {
+        return number;
+    }
+}
+
 function main() {
     program
         .description('Start a partition heal coordinated by the target node')
         .option('--tchannel-v1')
-        .option('--verbose')
+        .option('--quiet')
+        .option('--tries <tries>', 'Number of times to try the heal', safeParseInt, 10)
         .usage('[options] <discoveryUri>');
     program.parse(process.argv);
 
@@ -45,17 +55,50 @@ function main() {
         discoveryUri: discoveryUri
     });
 
-    clusterManager.heal(function onHeal(err, resp) {
-        assertNoError(err);
-        if (resp && program.verbose) {
-            var targets = resp.targets || [];
-            console.log('Executed heal to', targets.length, 'targets');
-            targets.forEach(function (target) {
-                console.log(' -', target);
-            });
+    var log = console.log;
+    if (program.quiet) {
+        // noop while in quiet mode
+        log = function () {};
+    }
+
+    function executeHeal(tries) {
+        if (tries <= 0) {
+            log('unable to heal partitions after multiple retries');
+            process.exit(2);
         }
-        process.exit();
-    });
+
+        clusterManager.heal(function onHeal(err, resp) {
+            if (err) {
+                assertNoError(err);
+                // return even though assertNoError will exit on error
+                return;
+            }
+
+            if (!resp) {
+                console.error('did not receive a response during heal.')
+                process.exit(3);
+            }
+
+
+            var targets = resp.targets || [];
+            if (targets.length == 0) {
+                log('No (reachable) partitions left')
+                // graceful exit
+                return process.exit(0);
+            }
+
+            log('Executed heal to', targets.length, 'targets');
+            targets.forEach(function (target) {
+                log(' - ' + target);
+            });
+
+            setTimeout(executeHeal, 1000, tries - 1);
+            return;
+        });
+    }
+
+    executeHeal(program.tries);
+
 }
 
 if (require.main === module) {
