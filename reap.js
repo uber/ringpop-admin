@@ -27,7 +27,7 @@ var program = require('commander');
 
 function main() {
     program
-        .description('Remove the faulty nodes from this node\'s membership')
+        .description('Remove nodes marked as faulty from the cluster')
         .option('--tchannel-v1')
         .usage('[options] <discoveryUri>');
     program.parse(process.argv);
