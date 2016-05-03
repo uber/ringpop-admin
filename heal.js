@@ -38,7 +38,6 @@ function main() {
     program
         .description('Start a partition heal coordinated by the target node')
         .option('--tchannel-v1')
-        .option('--quiet')
         .option('--tries <tries>', 'Number of times to try the heal', safeParseInt, 10)
         .usage('[options] <discoveryUri>');
     program.parse(process.argv);
@@ -55,24 +54,15 @@ function main() {
         discoveryUri: discoveryUri
     });
 
-    var log = console.log;
-    if (program.quiet) {
-        // noop while in quiet mode
-        log = function () {};
-    }
-
     function executeHeal(tries) {
         if (tries <= 0) {
-            log('unable to heal partitions after multiple retries');
+            console.error('unable to heal partitions after multiple retries');
             process.exit(2);
         }
 
         clusterManager.heal(function onHeal(err, resp) {
-            if (err) {
-                assertNoError(err);
-                // return even though assertNoError will exit on error
-                return;
-            }
+            // assert that there is no error, quit if there is an error.
+            assertNoError(err);
 
             if (!resp) {
                 console.error('did not receive a response during heal.');
@@ -81,14 +71,14 @@ function main() {
 
             var targets = resp.targets || [];
             if (targets.length === 0) {
-                log('No (reachable) partitions left');
+                console.log('No known partitions left');
                 // graceful exit
                 return process.exit(0);
             }
 
-            log('Executed heal to', targets.length, 'targets');
+            console.log('Executed heal to', targets.length, 'targets');
             targets.forEach(function (target) {
-                log(' - ' + target);
+                console.log(' - ' + target);
             });
 
             setTimeout(executeHeal, 1000, tries - 1);
