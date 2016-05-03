@@ -34,6 +34,16 @@ function safeParseInt(number, defaultValue) {
     }
 }
 
+function getTime() {
+    var date = new Date();
+    var hour = date.getHours(); hour = (hour < 10 ? "0" : "") + hour;
+    var min  = date.getMinutes(); min = (min < 10 ? "0" : "") + min;
+    var sec  = date.getSeconds(); sec = (sec < 10 ? "0" : "") + sec;
+    var msec = date.getMilliseconds();
+    msec = (msec < 10? "00" : msec < 100? "0" : "") + msec;
+    return hour + ":" + min + ":" + sec + "." + msec;
+}
+
 function main() {
     program
         .description('Start a partition heal coordinated by the coordinator node')
@@ -45,7 +55,7 @@ function main() {
     var discoveryUri = program.args[0];
 
     if (!discoveryUri) {
-        console.error('Error: discoveryUri is required');
+        console.error(getTime(), 'Error: discoveryUri is required');
         process.exit(1);
     }
 
@@ -56,7 +66,7 @@ function main() {
 
     function executeHeal(tries) {
         if (tries <= 0) {
-            console.error('unable to heal partitions after multiple retries');
+            console.error(getTime(), 'unable to heal partitions after multiple retries');
             process.exit(2);
         }
 
@@ -65,20 +75,20 @@ function main() {
             assertNoError(err);
 
             if (!resp) {
-                console.error('did not receive a response during heal.');
+                console.error(getTime(), 'did not receive a response during heal.');
                 process.exit(3);
             }
 
             var targets = resp.targets || [];
             if (targets.length === 0) {
-                console.log('No known partitions left');
+                console.log(getTime(), 'No known partitions left');
                 // graceful exit
                 return process.exit(0);
             }
 
-            console.log('Executed heal to', targets.length, 'targets');
+            console.log(getTime(), 'Executed heal to', targets.length, 'targets');
             targets.forEach(function (target) {
-                console.log(' - ' + target);
+                console.log(getTime(), ' - ' + target);
             });
 
             setTimeout(executeHeal, 1000, tries - 1);
