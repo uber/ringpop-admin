@@ -25,7 +25,7 @@ Help:
       partitions   Show partition information of a ring
       top          General membership information
       reap         Remove nodes marked as faulty from the cluster
-      heal         Start a partition heal coordinated by the target node
+      heal         Start a partition heal coordinated by the coordinator node
       help [cmd]   display help for [cmd]
   
     Command-line tools for Ringpop

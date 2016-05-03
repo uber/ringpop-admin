@@ -36,7 +36,7 @@ function safeParseInt(number, defaultValue) {
 
 function main() {
     program
-        .description('Start a partition heal coordinated by the target node')
+        .description('Start a partition heal coordinated by the coordinator node')
         .option('--tchannel-v1')
         .option('--tries <tries>', 'Number of times to try the heal', safeParseInt, 10)
         .usage('[options] <discoveryUri>');
