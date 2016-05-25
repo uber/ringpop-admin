@@ -39,8 +39,15 @@ function PartitionCommand(tchannelV1, discoveryUri, wait, quiet) {
     this.quiet = quiet;
 }
 
+function CollisionCommand(tchannelV1, discoveryUri, replicaPoints) {
+    this.useTChannelV1 = tchannelV1;
+    this.discoveryUri = discoveryUri;
+    this.replicaPoints = replicaPoints;
+}
+
 module.exports = {
+    CollisionCommand: CollisionCommand,
+    PartitionCommand: PartitionCommand,
     ReuseCommand: ReuseCommand,
-    StatusCommand: StatusCommand,
-    PartitionCommand: PartitionCommand
+    StatusCommand: StatusCommand
 };

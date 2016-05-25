@@ -40,6 +40,7 @@ function main() {
         .command('top', 'General membership information')
         .command('reap', 'Remove nodes marked as faulty from the cluster')
         .command('heal', 'Start a partition heal coordinated by the coordinator node')
+        .command('collisions', 'Show hash collisions of a ring')
         .on('--help', function onHelp() {
             console.log('  Discovery:');
             console.log('');

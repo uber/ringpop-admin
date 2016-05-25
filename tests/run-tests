@@ -7,27 +7,6 @@
 #
 set -e
 
-declare cram_opts="-v"
-declare package_dir="${0%/*}/../"
-declare prog_cram="cram"
-#declare prog_tick_cluster="${package_dir}/node_modules/ringpop/scripts/tick-cluster.js"
-declare prog_tick_cluster="${0%/*}/tick-cluster.js"
-declare pid_tickcluster=
-declare test_files="${0%/*}/*.t"
-
-_cleanup() {
-    _print "Cleaning up; sending SIGTERM to tick-cluster"
-    kill $pid_tickcluster
-}
-
-#
-# Print the specified text to stdout, prefixing with a timestamp.
-#
-# $1: Text to print
-#
-_print() {
-    echo -e "[$(date)] ${0##*/}: $@"
-}
 
 #
 # Echos the full normalised path of the specified path, or nothing if the path
@@ -42,6 +21,34 @@ _normalise_path() {
         return 0
     fi
 }
+
+declare cram_opts="-v"
+declare package_dir=$(_normalise_path "${0%/*}/../")
+declare prog_cram="cram"
+#declare prog_tick_cluster="${package_dir}/node_modules/ringpop/scripts/tick-cluster.js"
+declare prog_tick_cluster="${0%/*}/tick-cluster.js"
+declare prog_ringpop="$package_dir/node_modules/ringpop/main.js"
+declare pid_tickcluster=
+declare test_files="${0%/*}/*.t"
+declare isolated_test_files="${0%/*}/isolated/*.t"
+
+_cleanup() {
+	if [ ! -z $pid_tickcluster ]; then
+		_print "Cleaning up; sending SIGTERM to tick-cluster"
+		kill $pid_tickcluster
+		pid_tickcluster=''
+	fi
+}
+
+#
+# Print the specified text to stdout, prefixing with a timestamp.
+#
+# $1: Text to print
+#
+_print() {
+    echo -e "[$(date)] ${0##*/}: $@"
+}
+
 
 if [ $# -gt 0 ]; then
 
@@ -65,11 +72,6 @@ if [ $# -gt 0 ]; then
 
 fi
 
-# Accept test files as arguments
-if [ $# -gt 0 ]; then
-    test_files="$@"
-fi
-
 # Check cram is installed
 if ! type cram &>/dev/null; then
     echo "$0 requires cram to be installed (try: 'sudo pip install cram')." >&2
@@ -84,12 +86,6 @@ if [ -z "$(which timeout || which gtimeout)" ]; then
     exit 1
 fi
 
-# Check test files exist
-if ! ls $test_files >/dev/null; then
-    echo "ERROR: Test files missing." >&2
-    exit 1
-fi
-
 # Build ringpop-admin if it hasn't already been built
 if [ ! -d "$package_dir/node_modules" ]; then
     cd "$package_dir" && { npm install || exit 1; }
@@ -100,35 +96,67 @@ if [ ! -x "$prog_tick_cluster" ]; then
     exit 1
 fi
 
-# Run tick cluster
-_print "Launching tick-cluster..."
-$prog_tick_cluster --interface=127.0.0.1 $package_dir/node_modules/ringpop/main.js >/dev/null &
-pid_tickcluster=$!
-
-sleep 1
-if ! ps -p $pid_tickcluster &>/dev/null; then
-    echo "ERROR: Launching tick-cluster failed" >&2
-    exit 1
-fi
-
 # Clean up tick-cluster on exit
 trap _cleanup exit
 
-# Wait for convergence
-_print "Waiting for convergence..."
-sleep 5
-
 # Test setup
 ${0%/*}/npm-bin-link ../package.json >/dev/null || exit 1
-export PATH=$(_normalise_path "${0%/*}/../.bin"):$PATH
 
-# Run the tests
-_print "Running tests..."
-cram $cram_opts $test_files
-declare test_result=$?
+export PATH=$(_normalise_path "${0%/*}/../.bin"):$PATH
+export PROG_RINGPOP="$prog_ringpop"
+export PACKAGE_DIR="$package_dir"
+
+run() {
+	# Check test files exist
+	if ! ls $@ >/dev/null; then
+		echo "ERROR: Test files missing." >&2
+		exit 1
+	fi
+
+	local exit_code=0
+	# Run tick cluster
+	_print "Launching tick-cluster..."
+	$prog_tick_cluster --interface=127.0.0.1 --port 3000 $prog_ringpop >/dev/null &
+	pid_tickcluster=$!
+
+	sleep 1
+	if ! ps -p $pid_tickcluster &>/dev/null; then
+		echo "ERROR: Launching tick-cluster failed" >&2
+		exit 1
+	fi
+
+	# Wait for convergence
+	_print "Waiting for convergence..."
+	sleep 2
+
+	# Run the tests
+	_print "Running tests..."
+	cram $cram_opts $@ || exit_code=1
+
+	_cleanup
+
+	return $exit_code
+}
+
+declare test_result=0
+# Accept test files as arguments
+if [ $# -gt 0 ]; then
+    run $@ || test_result=1
+else
+	_print "Testing $test_files"
+	run $test_files
+
+	for file in $isolated_test_files; do
+		_print "Testing $file isolated"
+		run $file || test_result=1
+	done
+fi
+
 
 if [ $test_result -eq 0 ]; then
     _print "\033[0;32mSuccess!\033[0m"
 fi
+
+_print "exiting $test_result"
 
 exit $test_result

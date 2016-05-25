@@ -10,6 +10,7 @@
     "ringpop-admin": "./ringpop-admin.js",
     "ringpop-admin-checksums": "./checksums.js",
     "ringpop-admin-count": "./count.js",
+    "ringpop-admin-collisions": "./collisions.js",
     "ringpop-admin-dist": "./dist.js",
     "ringpop-admin-dump": "./dump.js",
     "ringpop-admin-heal": "./heal.js",
@@ -32,6 +33,7 @@
     "cli-color": "^1.0.0",
     "cli-table": "^0.3.1",
     "commander": "^2.6.0",
+    "farmhash": "^1.1.1",
     "ringpop": "^10.0.0",
     "tchannel": "3.6.2",
     "underscore": "^1.8.3"

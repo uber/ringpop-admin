@@ -79,8 +79,24 @@ function parsePartitionCommand() {
     );
 }
 
+function parseCollisionCommand() {
+    program.description('Show collision information of a ring')
+        .option('--tchannel-v1')
+        .option('--replica-points [replica-points]', 'The number of replica points.', 100)
+        .usage('[options] <discoveryUri>');
+    program.parse(process.argv);
+    assertPositionArg(program, 0, 'discoveryUri');
+
+    return new commands.CollisionCommand(
+        program.tchannelV1,
+        program.args[0],
+        program.replicaPoints
+    );
+}
+
 module.exports = {
+    parseCollisionCommand: parseCollisionCommand,
+    parsePartitionCommand: parsePartitionCommand,
     parseReuseCommand: parseReuseCommand,
-    parseStatusCommand: parseStatusCommand,
-    parsePartitionCommand: parsePartitionCommand
+    parseStatusCommand: parseStatusCommand
 };
