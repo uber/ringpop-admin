@@ -21,92 +21,104 @@
 // THE SOFTWARE.
 'use strict';
 
+var AdminClient = require('./lib/admin-client');
 var createTable = require('./lib/table.js').create;
-var ClusterManager = require('./lib/cluster.js');
-var parseCollisionCommand = require('./parser.js').parseCollisionCommand;
 var detectChecksumMethod = require('./lib/hash-method.js');
+var discover = require('./lib/discover').discover;
+var parseCollisionCommand = require('./parser.js').parseCollisionCommand;
 
 function main() {
     var command = parseCollisionCommand();
-    var clusterManager = new ClusterManager({
-        useTChannelV1: command.useTChannelV1,
-        discoveryUri: command.discoveryUri
-    });
 
-    printCollisions(command, clusterManager);
+    discover(command.discoveryUri, function onDiscover(err, seeds) {
+        if (err) {
+            console.error('Failed to discover hosts: ', err);
+            process.exit(1);
+            return;
+        }
+
+        printCollisions(command, seeds[0]);
+    });
 }
 
-function printCollisions(command, clusterManager) {
-    clusterManager.fetchStats(function onStats(err) {
+function detectCollisions(membership, replicaPoints) {
+    var hashFunction = null;
+    var memberHashes = {};
+    var replicaHashes = {};
+
+    var memberCollisionTable = createTable(['hash', 'address', 'collision']);
+    var replicaCollisionTable = createTable(['hash', 'address', '# replica', 'collision', '# replica']);
+
+    function checkMemberCollision(address) {
+        var hash = '' + hashFunction(address);
+        if (!memberHashes[hash]) {
+            memberHashes[hash] = address;
+        } else if (memberHashes[hash] !== address) {
+            //collision!
+            memberCollisionTable.push([hash, address, memberHashes[hash]]);
+        }
+    }
+
+    function checkReplicaCollision(address, replica) {
+        var replicaName = address + replica;
+        var hash = '' + hashFunction(replicaName);
+        if (!replicaHashes[hash]) {
+            replicaHashes[hash] = {address: address, replica: replica};
+        } else if (replicaHashes[hash].address !== address) {
+            //collision!
+            replicaCollisionTable.push([hash, address, replica, replicaHashes[hash].address, replicaHashes[hash].replica]);
+        }
+    }
+
+    hashFunction = detectChecksumMethod(membership.members, membership.checksum).hashFunction;
+
+    membership.members.forEach(function eachMember(member) {
+        var address = member.address;
+        checkMemberCollision(address);
+
+        for (var i = 0; i < replicaPoints; i++) {
+            checkReplicaCollision(address, i);
+        }
+    });
+
+    return {
+        memberCollisionTable: memberCollisionTable,
+        replicaCollisionTable: replicaCollisionTable
+    };
+}
+
+function printCollisions(command, host) {
+    var adminClient = new AdminClient({
+        useTChannelV1: command.useTChannelV1
+    });
+
+    adminClient.stats(host, function onStats(err, stats) {
         if (err) {
-            console.error('Error: ' + err.message);
+            console.error('Failed to fetch stats: ', err);
             process.exit(1);
         }
 
-        var partitions = clusterManager.getPartitions();
+        var tables = detectCollisions(stats.membership, command.replicaPoints);
 
-        var hashFunction = null;
-        var memberHashes = {};
-        var replicaHashes = {};
-
-        var memberCollisionTable = createTable(['hash', 'address', 'collision']);
-        var replicaCollisionTable = createTable(['hash', 'address', '# replica', 'collision', '# replica']);
-
-        function checkMemberCollision(address) {
-            var hash = '' + hashFunction(address);
-            if (!memberHashes[hash]) {
-                memberHashes[hash] = address;
-            } else if (memberHashes[hash] !== address) {
-                //collision!
-                memberCollisionTable.push([hash, address, memberHashes[hash]]);
-            }
-        }
-
-        function checkReplicaCollision(address, replica) {
-            var replicaName = address + replica;
-            var hash = '' + hashFunction(replicaName);
-            if (!replicaHashes[hash]) {
-                replicaHashes[hash] = {address: address, replica: replica};
-            } else if (replicaHashes[hash].address !== address) {
-                //collision!
-                replicaCollisionTable.push([hash, address, replica, replicaHashes[hash].address, replicaHashes[hash].replica]);
-            }
-        }
-
-        partitions.forEach(function eachPartition(partition) {
-            if (!hashFunction) {
-                hashFunction = detectChecksumMethod(partition.membership, partition.membershipChecksum).hashFunction;
-            }
-
-            partition.membership.forEach(function eachMember(member) {
-                var address = member.address;
-                checkMemberCollision(address);
-
-                for (var i = 0; i < command.replicaPoints; i++) {
-                    checkReplicaCollision(address, i);
-                }
-            });
-        });
         var exitCode = 0;
-        if (memberCollisionTable.length > 0) {
+        if (tables.memberCollisionTable.length > 0) {
             exitCode = 1;
-            console.log('membership collisions:', memberCollisionTable.length);
-            console.log(memberCollisionTable.toString());
-        }   else {
+            console.log('membership collisions:', tables.memberCollisionTable.length);
+            console.log(tables.memberCollisionTable.toString());
+        } else {
             console.log('no membership collisions!');
         }
         console.log('\n');
 
-        if (replicaCollisionTable.length > 0) {
+        if (tables.replicaCollisionTable.length > 0) {
             exitCode = 1;
-            console.log('replica collisions: ', replicaCollisionTable.length);
-            console.log(replicaCollisionTable.toString());
-        }   else {
+            console.log('replica collisions: ', tables.replicaCollisionTable.length);
+            console.log(tables.replicaCollisionTable.toString());
+        } else {
             console.log('no replica collisions!');
         }
         console.log('\n');
 
-        clusterManager.printConnectionErrorMsg();
         process.exit(exitCode);
     });
 }
