@@ -11,7 +11,7 @@ No collisions:
 Forces collision:
   $  $PROG_RINGPOP --listen=127.0.0.1:30001 --hosts="$PACKAGE_DIR/tests/hosts.json" &>/dev/null &
   $  pid_ringpop=$!
-  $  sleep 1
+  $  sleep 5
   $  ringpop-admin collisions 127.0.0.1:30001
   no membership collisions!
   
