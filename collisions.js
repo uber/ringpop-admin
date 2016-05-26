@@ -43,21 +43,9 @@ function main() {
 
 function detectCollisions(membership, replicaPoints) {
     var hashFunction = null;
-    var memberHashes = {};
     var replicaHashes = {};
 
-    var memberCollisionTable = createTable(['hash', 'address', 'collision']);
     var replicaCollisionTable = createTable(['hash', 'address', '# replica', 'collision', '# replica']);
-
-    function checkMemberCollision(address) {
-        var hash = '' + hashFunction(address);
-        if (!memberHashes[hash]) {
-            memberHashes[hash] = address;
-        } else if (memberHashes[hash] !== address) {
-            //collision!
-            memberCollisionTable.push([hash, address, memberHashes[hash]]);
-        }
-    }
 
     function checkReplicaCollision(address, replica) {
         var replicaName = address + replica;
@@ -74,17 +62,13 @@ function detectCollisions(membership, replicaPoints) {
 
     membership.members.forEach(function eachMember(member) {
         var address = member.address;
-        checkMemberCollision(address);
 
         for (var i = 0; i < replicaPoints; i++) {
             checkReplicaCollision(address, i);
         }
     });
 
-    return {
-        memberCollisionTable: memberCollisionTable,
-        replicaCollisionTable: replicaCollisionTable
-    };
+    return replicaCollisionTable;
 }
 
 function printCollisions(command, host) {
@@ -98,28 +82,16 @@ function printCollisions(command, host) {
             process.exit(1);
         }
 
-        var tables = detectCollisions(stats.membership, command.replicaPoints);
+        var replicaCollisionTable = detectCollisions(stats.membership, command.replicaPoints);
 
-        var exitCode = 0;
-        if (tables.memberCollisionTable.length > 0) {
-            exitCode = 1;
-            console.log('membership collisions:', tables.memberCollisionTable.length);
-            console.log(tables.memberCollisionTable.toString());
-        } else {
-            console.log('no membership collisions!');
-        }
-        console.log('\n');
-
-        if (tables.replicaCollisionTable.length > 0) {
-            exitCode = 1;
-            console.log('replica collisions: ', tables.replicaCollisionTable.length);
-            console.log(tables.replicaCollisionTable.toString());
+        if (replicaCollisionTable.length > 0) {
+            console.log('replica collisions: ', replicaCollisionTable.length);
+            console.log(replicaCollisionTable.toString());
+            process.exit(1);
         } else {
             console.log('no replica collisions!');
+            process.exit(0);
         }
-        console.log('\n');
-
-        process.exit(exitCode);
     });
 }
 

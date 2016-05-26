@@ -1,11 +1,7 @@
 No collisions:
 
   $  ringpop-admin collisions 127.0.0.1:3000
-  no membership collisions!
-   (re)
-   (re)
   no replica collisions!
-   (re)
    (re)
 
 Forces collision:
@@ -13,9 +9,6 @@ Forces collision:
   $  pid_ringpop=$!
   $  sleep 5
   $  ringpop-admin collisions 127.0.0.1:30001
-  no membership collisions!
-  
-  
   replica collisions:  10
    hash         address           # replica   collision        # replica 
    948751649    127.0.0.1:30001   0           127.0.0.1:3000   10        
