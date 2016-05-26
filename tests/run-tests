@@ -8,7 +8,7 @@
 set -e
 
 
-declare cram_opts="-v"
+declare cram_opts="-d"
 declare package_dir="${0%/*}/../"
 declare prog_cram="cram"
 #declare prog_tick_cluster="${package_dir}/node_modules/ringpop/scripts/tick-cluster.js"
