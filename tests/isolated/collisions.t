@@ -2,7 +2,6 @@ No collisions:
 
   $  ringpop-admin collisions 127.0.0.1:3000
   no replica collisions!
-   (re)
 
 Forces collision:
   $  $PROG_RINGPOP --listen=127.0.0.1:30001 --hosts="$PACKAGE_DIR/tests/hosts.json" &>/dev/null &
@@ -21,8 +20,6 @@ Forces collision:
    3537705259   127.0.0.1:30001   7           127.0.0.1:3000   17        
    3798759208   127.0.0.1:30001   8           127.0.0.1:3000   18        
    1592015044   127.0.0.1:30001   9           127.0.0.1:3000   19        
-   (re)
-   (re)
   [1]
 
   $  kill $pid_ringpop
