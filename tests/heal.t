@@ -1,5 +1,4 @@
-Test ringpop-admin heal on unsupported ringpop:
+Test ringpop-admin heal:
 
   $  ringpop-admin heal 127.0.0.1:3000
-  Error: no such endpoint service="ringpop" endpoint="/admin/healpartition/disco"
-  [1]
+  [0-9:\.]+ No known partitions left (re)
