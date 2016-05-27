@@ -130,7 +130,7 @@ run() {
 
 	# Run the tests
 	_print "Running tests..."
-	cram $cram_opts $@ || exit_code=1
+	cram $cram_opts "$@" || exit_code=1
 
 	_cleanup
 
