@@ -145,6 +145,10 @@ else
 	_print "Testing $test_files"
 	run $test_files
 
+	# To be able to test the collisions-command, we need to add a node with a specific port to the ring.
+	# Instead of changing all the other tests to expect that node to be there I think it makes more sense to allow
+	# the option to run tests in isolation from others if they need a different setup.
+	# Ideally we let each test do their own setup/tear-down.
 	for file in $isolated_test_files; do
 		_print "Testing $file isolated"
 		run $file || test_result=1
